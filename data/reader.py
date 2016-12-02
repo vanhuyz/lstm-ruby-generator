@@ -5,7 +5,10 @@ import tokenize as tk
 from io import BytesIO
 import pickle
 
+import common.utils as utils
+
 def prepare_raw_data(force=False, test=False):
+  """"Word list over the data"""
   raw_data_path = 'data/raw_data.pickle'
   if force == False and os.path.exists(raw_data_path):
     with open(raw_data_path, 'rb') as handle:
@@ -24,7 +27,7 @@ def prepare_raw_data(force=False, test=False):
           raw_data.append('<bof>')
           for line in text.splitlines():
             indent_num = len(line) - len(line.lstrip())
-            delimiter = '　' 
+            delimiter = '　' # zenkaku space
             line = add_delimiter(delimiter,line, string.punctuation)
             line = line.replace(' ',delimiter + ' ' + delimiter)
             tokens = line.split(delimiter)
@@ -32,6 +35,7 @@ def prepare_raw_data(force=False, test=False):
             raw_data.extend(tokens)
             raw_data.append('<nl>')
           raw_data.append('<eof>')
+
         if test==True:
           print(raw_data)
           return raw_data
@@ -41,9 +45,8 @@ def prepare_raw_data(force=False, test=False):
   return raw_data
 
 def print_raw_data(raw_data):
-  symbols = ':.",[]()_|<>@'
   for i, tok in enumerate(raw_data):
-    if tok == '<bof>':
+    if tok == '<bof>' or tok == '<pad>':
       continue
     elif tok == '<eof>':
       print("="*50)
@@ -51,9 +54,6 @@ def print_raw_data(raw_data):
       print('')
     else:
       print(tok, end='')
-
-def print_indent(indent):
-  print(' ' * int(indent[1]), end='')
 
 def add_delimiter(delimiter, text, symbols):
   """Add delimiter before and after a symbol"""
@@ -72,12 +72,13 @@ def build_dict(raw_data, force=False):
   for token in raw_data:
     if not token in dictionary:
       dictionary[token] = len(dictionary)
-  print(len(dictionary))
+  print("Length of dictionary: {}".format(len(dictionary)))
   with open(dict_path, 'wb') as handle:
     pickle.dump(dictionary, handle)
   return dictionary
 
 def convert_data(raw_data, dictionary, force=False):
+  """Convert raw_data's word to word_id"""
   data_path = 'data/data.pickle'
   if force == False and os.path.exists(data_path):
     with open(data_path, 'rb') as handle:
@@ -85,8 +86,7 @@ def convert_data(raw_data, dictionary, force=False):
     return data
 
   data = []
-  for token in raw_data:
-    data.append(dictionary[token])
+  data.extend(dictionary[token] for token in raw_data)
   with open(data_path, 'wb') as handle:
     pickle.dump(data, handle)
   return data
@@ -94,18 +94,34 @@ def convert_data(raw_data, dictionary, force=False):
 def print_data(data, dictionary):
   reverse_dictionary = dict(zip(dictionary.values(), dictionary.keys()))
   raw_data = []
-  for id in data:
-    raw_data.append(reverse_dictionary[id])
+  raw_data.extend(reverse_dictionary[id] for id in data)
   print_raw_data(raw_data)
 
-def save(data)
+def get_batch(batch_size, num_steps, name=None):
+  """Returns:
+    A pair of Tensors, each shaped [batch_size, num_steps]. The second element
+    of the tuple is the same data time-shifted to the right by one."""
+  data = utils.load_data()
+  
+  with tf.name_scope(name, "Input", [data, batch_size, num_steps]):
+    data = tf.convert_to_tensor(data, name="data", dtype=tf.int32)
+
+    data_len = tf.size(data)
+    batch_len = data_len // batch_size
+    data = tf.reshape(data[0 : batch_size * batch_len],
+                      [batch_size, batch_len])
+
+    epoch_size = (batch_len - 1) // num_steps
+
+    i = tf.train.range_input_producer(epoch_size, shuffle=False).dequeue()
+    x = tf.slice(data, [0, i * num_steps], [batch_size, num_steps])
+    y = tf.slice(data, [0, i * num_steps + 1], [batch_size, num_steps])
+    return x, y
 
 if __name__ == '__main__':
   raw_data = prepare_raw_data(force=True, test=False)
-  #print_raw_data(raw_data)
   dictionary = build_dict(raw_data, force=True)
   data = convert_data(raw_data, dictionary, force=True)
-  print(data[:100])
+  num_steps = 100
+  print(len(data))
   print_data(data[:1000], dictionary)
-
-  
