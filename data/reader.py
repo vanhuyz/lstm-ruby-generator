@@ -5,7 +5,7 @@ import tokenize as tk
 from io import BytesIO
 import pickle
 
-def prepare_raw_data(force=False):
+def prepare_raw_data(force=False, test=False):
   raw_data_path = 'data/raw_data.pickle'
   if force == False and os.path.exists(raw_data_path):
     with open(raw_data_path, 'rb') as handle:
@@ -24,19 +24,24 @@ def prepare_raw_data(force=False):
           raw_data.append('<bof>')
           for line in text.splitlines():
             indent_num = len(line) - len(line.lstrip())
-            line = add_delimiter(line, string.punctuation)
-            raw_data.append('<{}indent>'.format(indent_num))
-            raw_data.extend(line.split())
+            delimiter = '　' 
+            line = add_delimiter(delimiter,line, string.punctuation)
+            line = line.replace(' ',delimiter + ' ' + delimiter)
+            tokens = line.split(delimiter)
+            tokens = filter(None, tokens)
+            raw_data.extend(tokens)
             raw_data.append('<nl>')
           raw_data.append('<eof>')
+        if test==True:
+          print(raw_data)
+          return raw_data
   with open(raw_data_path, 'wb') as handle:
     print(len(raw_data))
     pickle.dump(raw_data, handle)
   return raw_data
 
 def print_raw_data(raw_data):
-  symbols = ':.",[]()_|<>'
-  # symbols = '._:'
+  symbols = ':.",[]()_|<>@'
   for i, tok in enumerate(raw_data):
     if tok == '<bof>':
       continue
@@ -44,20 +49,16 @@ def print_raw_data(raw_data):
       print("="*50)
     elif tok == '<nl>':
       print('')
-    elif tok in symbols or (i+1 < len(raw_data) and raw_data[i+1] in symbols):
-      print(tok, end='')
-    elif tok[2:] == 'indent>':
-      print_indent(tok)
     else:
-      print(tok, end=' ')
+      print(tok, end='')
 
 def print_indent(indent):
   print(' ' * int(indent[1]), end='')
 
-def add_delimiter(text, symbols):
-  """Add space before and after a symbol"""
+def add_delimiter(delimiter, text, symbols):
+  """Add delimiter before and after a symbol"""
   for symbol in symbols:
-    text = text.replace(symbol, " {} ".format(symbol))
+    text = text.replace(symbol, "{}{}{}".format(delimiter,symbol,delimiter))
   return text
 
 def build_dict(raw_data, force=False):
@@ -97,10 +98,13 @@ def print_data(data, dictionary):
     raw_data.append(reverse_dictionary[id])
   print_raw_data(raw_data)
 
+def save(data)
+
 if __name__ == '__main__':
-  raw_data = prepare_raw_data(force=False)
-  dictionary = build_dict(raw_data, force=False)
-  data = convert_data(raw_data, dictionary, force=False)
+  raw_data = prepare_raw_data(force=True, test=False)
+  #print_raw_data(raw_data)
+  dictionary = build_dict(raw_data, force=True)
+  data = convert_data(raw_data, dictionary, force=True)
   print(data[:100])
   print_data(data[:1000], dictionary)
 
