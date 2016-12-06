@@ -34,7 +34,8 @@ def construct_graph(graph):
   vocab_size = len(dictionary)
 
   with graph.as_default():
-    inputs, labels = reader.get_batch(batch_size, num_steps)
+    inputs_from_get_batch, labels = reader.get_batch(batch_size, num_steps)
+    inputs = tf.placeholder_with_default(inputs_from_get_batch, shape=(None, num_steps))
 
     lstm_cell = tf.nn.rnn_cell.BasicLSTMCell(size, forget_bias=0.0, state_is_tuple=True)
     cell = tf.nn.rnn_cell.MultiRNNCell([lstm_cell] * num_layers, state_is_tuple=True)
@@ -99,7 +100,7 @@ def train():
         train_writer.add_summary(train_summary, step)
         train_writer.flush()
         
-        if step % 1000 == 0:
+        if step % 100 == 0:
           print("=" * 80)
           print("Loss at step {}: {}".format(step, train_loss))
           print("Train input:")
