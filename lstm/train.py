@@ -99,7 +99,7 @@ def train():
         train_writer.add_summary(train_summary, step)
         train_writer.flush()
         
-        if step % 1 == 1000:
+        if step % 1000 == 0:
           print("=" * 80)
           print("Loss at step {}: {}".format(step, train_loss))
           print("Train input:")
