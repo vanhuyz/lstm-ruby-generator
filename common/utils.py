@@ -25,16 +25,18 @@ def print_raw_data(raw_data):
     if tok == '<bof>' or tok == '<pad>':
       continue
     elif tok == '<eof>':
-      print("="*50)
+      break
     elif tok == '<nl>':
       print('')
     else:
       print(tok, end='')
-  print("n")
+  print("\n" + "="*50)
 
-def print_data(data):
+def print_data(data, pretty=False):
   reverse_dictionary = load_reverse_dictionary()
   raw_data = []
   raw_data.extend(reverse_dictionary[id] for id in data)
-  #print_raw_data(raw_data)
-  print(''.join(raw_data))
+  if pretty:
+    print_raw_data(raw_data)
+  else:
+    print(''.join(raw_data))
