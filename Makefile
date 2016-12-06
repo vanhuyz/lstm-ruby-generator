@@ -17,6 +17,7 @@ docker-train:
 
 docker-retrain:
 	bash gen_env.sh
+	rm -rf tensorboard/*
 	$(COMPOSE) up --build --force-recreate -d train tensorboard
 
 log:
