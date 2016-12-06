@@ -10,7 +10,7 @@ services:
       - "/dev/nvidia-uvm-tools:/dev/nvidia-uvm-tools"
       - "/dev/nvidia0:/dev/nvidia0"
     volumes:
-      - /mnt/data2/checkpoints/vanhuyz/lstm-ruby-generator/$TODAY:/tmp/lstm-ruby-generator/lstm/checkpoints/$TODAY:rw # to save checkpoints
+      - /mnt/data2/checkpoints/vanhuyz/lstm-ruby-generator/$TODAY:/tmp/lstm-ruby-generator/checkpoints/$TODAY:rw # to save checkpoints
       - /tmp/lstm-ruby-generator/tensorboard # for tensorboard
       - nvidia_driver:/usr/local/nvidia:ro # for nvidia-docker
     tty: true
