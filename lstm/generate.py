@@ -27,7 +27,7 @@ def format_feed(input):
 
 def generate():
   graph = tf.Graph()
-  _, _, inputs, probs, _, dictionary, _, _ = construct_graph(graph)
+  _, _, inputs, probs, _, dictionary, saver, _ = construct_graph(graph)
   with tf.Session(graph=graph) as sess:
     saver.restore(sess, "checkpoints/model.ckpt")
     coord = tf.train.Coordinator()
