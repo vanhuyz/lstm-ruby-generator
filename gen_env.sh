@@ -1,0 +1,1 @@
+echo TODAY=`date +%Y%m%d` > .env
