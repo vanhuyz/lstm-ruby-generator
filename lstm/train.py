@@ -18,7 +18,7 @@ FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string('data_dir', 'data', """Directory of data.""")
 tf.app.flags.DEFINE_integer('batch_size', 32, """Batch size.""")
 tf.app.flags.DEFINE_float('learning_rate', 1.0, """Learning rate.""")
-tf.app.flags.DEFINE_integer('lstm_size', 64, """LSTM hidden size.""")
+tf.app.flags.DEFINE_integer('lstm_size', 128, """LSTM hidden size.""")
 tf.app.flags.DEFINE_integer('num_layers', 2, """Number of LSTM layers.""")
 tf.app.flags.DEFINE_integer('num_steps', 100, """Sequence length.""")
 
@@ -98,15 +98,15 @@ def train():
         train_writer.add_summary(train_summary, step)
         train_writer.flush()
         
-        if step % 1 == 0:
+        if step % 1 == 1000:
           print("=" * 80)
           print("Loss at step {}: {}".format(step, train_loss))
           print("Train input:")
           utils.print_data(train_inputs[0])
           print("-" * 80)
           print("Train output:")
-          utils.print_data(train_probs[0:100].argmax(axis=1))
-        if step % 1000 == 0:
+          utils.print_data(train_probs[0:FLAGS.num_steps].argmax(axis=1))
+        if step % 10000 == 0:
           print("Learning rate: {}".format(train_lr))
           os.makedirs(checkpoint_dir, exist_ok=True)
           save_path = saver.save(sess, "checkpoints/{}/model.ckpt".format(today))

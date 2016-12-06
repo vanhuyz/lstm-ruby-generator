@@ -20,7 +20,7 @@ log:
 	$(COMPOSE) logs -f --tail 10 train
 
 stop:
-	$(COMPOSE) stop train
+	$(COMPOSE) stop train tensorboard
 
 down:
 	$(COMPOSE) down -v
