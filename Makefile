@@ -17,11 +17,13 @@ docker-train:
 
 docker-retrain:
 	bash gen_env.sh
-	rm -rf tensorboard/*
 	$(COMPOSE) up --build --force-recreate -d train tensorboard
 
 log:
 	$(COMPOSE) logs -f --tail 10 train
+
+bash:
+	$(COMPOSE) exec train /bin/bash
 
 stop:
 	$(COMPOSE) stop train tensorboard
