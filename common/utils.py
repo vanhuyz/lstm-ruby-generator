@@ -1,17 +1,17 @@
 import pickle
 
 def load_dictionary():
-  with open('data/dictionary.pickle', 'rb') as handle:
+  with open('data/dicts/dictionary.pickle', 'rb') as handle:
     dictionary = pickle.load(handle)
   return dictionary
 
 def load_raw_data():
-  with open('data/raw_data.pickle', 'rb') as handle:
+  with open('data/dicts/raw_data.pickle', 'rb') as handle:
     raw_data = pickle.load(handle)
   return raw_data
 
 def load_data():
-  with open('data/data.pickle', 'rb') as handle:
+  with open('data/dicts/data.pickle', 'rb') as handle:
     data = pickle.load(handle)
   return data
 
