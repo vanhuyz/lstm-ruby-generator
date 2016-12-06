@@ -5,6 +5,11 @@ def load_dictionary():
     dictionary = pickle.load(handle)
   return dictionary
 
+def load_reverse_dictionary():
+  with open('data/dicts/reverse_dictionary.pickle', 'rb') as handle:
+    reverse_dictionary = pickle.load(handle)
+  return reverse_dictionary
+
 def load_raw_data():
   with open('data/dicts/raw_data.pickle', 'rb') as handle:
     raw_data = pickle.load(handle)
@@ -28,8 +33,7 @@ def print_raw_data(raw_data):
   print("n")
 
 def print_data(data):
-  dictionary = load_dictionary()
-  reverse_dictionary = dict(zip(dictionary.values(), dictionary.keys()))
+  reverse_dictionary = load_reverse_dictionary()
   raw_data = []
   raw_data.extend(reverse_dictionary[id] for id in data)
   #print_raw_data(raw_data)

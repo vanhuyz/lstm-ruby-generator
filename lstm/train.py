@@ -81,9 +81,9 @@ def train():
   graph = tf.Graph()
   optimizer, loss, inputs, probs, learning_rate, dictionary, saver, summary = construct_graph(graph)
 
-  train_writer = tf.train.SummaryWriter('tensorboard/train', graph)
-
   today = datetime.date.today().strftime("%Y%m%d")
+
+  train_writer = tf.train.SummaryWriter('tensorboard/train/{}'.format(today), graph)
   checkpoint_dir = "checkpoints/{}".format(today)
 
   with tf.Session(graph=graph) as sess:
@@ -132,29 +132,3 @@ def train():
 
 if __name__ == '__main__':
   train()
-  # graph = tf.Graph()
-  # optimizer, loss, inputs, probs, learning_rate, dictionary, saver, summary = construct_graph(graph)
-
-  # dictionary = utils.load_dictionary()
-  # with tf.Session(graph=graph) as sess:
-  #   sess.run(tf.global_variables_initializer())
-  #   coord = tf.train.Coordinator()
-  #   threads = tf.train.start_queue_runners(sess=sess, coord=coord)
-  #   step = 0
-  #   _, train_loss, train_inputs, train_probs, train_lr, train_summary = sess.run([optimizer, loss, inputs, probs, learning_rate, summary])
-    
-  #   logger.info("=" * 80)
-  #   logger.info("Loss at step {}: {}".format(step, train_loss))
-  #   # x_string = utils.codes_to_string(train_inputs[0], vocabulary)
-  #   #d_string = utils.codes_to_string(train_probs[0:140].argmax(axis=1), vocabulary)
-  #   print(train_inputs[0])
-  #   print(train_probs[0])
-  #   utils.print_data(train_inputs[0])
-  #   utils.print_data(train_probs[0:100].argmax(axis=1))
-  #   # logger.info('  Input: ' + train_inputs)
-  #   # logger.info('Decoded: ' + train_probs)
-  #   if step % 1000 == 0:
-  #     logger.info("Learning rate: {}".format(train_lr))
-
-  #   coord.request_stop()
-  #   coord.join(threads)
