@@ -27,13 +27,12 @@ def format_feed(input):
 
 def generate():
   graph = tf.Graph()
-  optimizer, loss, inputs, probs, learning_rate, dictionary, saver, summary = construct_graph(graph)
+  _, _, inputs, probs, _, dictionary, _, _ = construct_graph(graph)
   with tf.Session(graph=graph) as sess:
     saver.restore(sess, "checkpoints/model.ckpt")
     coord = tf.train.Coordinator()
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
 
-    dictionary = utils.load_dictionary()
     feed_input = []
     sample_character = dictionary['<bof>']
     feed_input.append(sample_character) # begin with <bof>
