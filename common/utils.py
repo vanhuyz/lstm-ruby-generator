@@ -25,10 +25,12 @@ def print_raw_data(raw_data):
       print('')
     else:
       print(tok, end='')
+  print("n")
 
 def print_data(data):
   dictionary = load_dictionary()
   reverse_dictionary = dict(zip(dictionary.values(), dictionary.keys()))
   raw_data = []
   raw_data.extend(reverse_dictionary[id] for id in data)
-  print_raw_data(raw_data)
+  #print_raw_data(raw_data)
+  print(''.join(raw_data))

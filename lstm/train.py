@@ -37,14 +37,12 @@ def construct_graph(graph):
 
     lstm_cell = tf.nn.rnn_cell.BasicLSTMCell(size, forget_bias=0.0, state_is_tuple=True)
     cell = tf.nn.rnn_cell.MultiRNNCell([lstm_cell] * num_layers, state_is_tuple=True)
-    initial_state = cell.zero_state(batch_size, tf.float32)
     
     outputs = []
-    state = initial_state
     with tf.variable_scope("RNN"):
       embedding = tf.get_variable("embedding", shape=[vocab_size, size], dtype=tf.float32)
       embed_inputs = tf.nn.embedding_lookup(embedding, inputs)
-      outputs, state = tf.nn.dynamic_rnn(cell, embed_inputs, initial_state=initial_state)
+      outputs, state = tf.nn.dynamic_rnn(cell, embed_inputs, dtype=tf.float32)
       
     with tf.name_scope('loss'):
       output = tf.reshape(tf.concat(1, outputs), [-1, size])
@@ -52,8 +50,7 @@ def construct_graph(graph):
       softmax_b = tf.get_variable("softmax_b", [vocab_size], dtype=tf.float32)
       logits = tf.matmul(output, softmax_w) + softmax_b
       targets = tf.reshape(labels, [-1])
-      #weights = tf.cast(targets > 0, tf.float32) # (PAD)は重み0、それ以外は1
-      weights = tf.ones([batch_size * num_steps], dtype=tf.float32)
+      weights = tf.ones_like(targets, dtype=tf.float32)
       sequence_loss = tf.nn.seq2seq.sequence_loss_by_example(
           [logits],
           [targets],
@@ -102,15 +99,18 @@ def train():
         train_writer.flush()
         
         if step % 1 == 0:
-          logger.info("=" * 80)
-          logger.info("Loss at step {}: {}".format(step, train_loss))
+          print("=" * 80)
+          print("Loss at step {}: {}".format(step, train_loss))
+          print("Train input:")
           utils.print_data(train_inputs[0])
+          print("-" * 80)
+          print("Train output:")
           utils.print_data(train_probs[0:100].argmax(axis=1))
         if step % 1000 == 0:
-          logger.info("Learning rate: {}".format(train_lr))
+          print("Learning rate: {}".format(train_lr))
           os.makedirs(checkpoint_dir, exist_ok=True)
           save_path = saver.save(sess, "checkpoints/{}/model.ckpt".format(today))
-          logger.info("Model saved in file: %s" % save_path)
+          print("Model saved in file: %s" % save_path)
         step += 1
 
     except KeyboardInterrupt:
