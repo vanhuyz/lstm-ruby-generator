@@ -14,7 +14,7 @@ docker-train:
 # 	$(COMPOSE) -f docker-compose-cpu.yml up --build -d train
 
 docker-retrain:
-	$(COMPOSE) up --build --force-recreate -d train
+	$(COMPOSE) up --build --force-recreate -d train tensorboard
 
 log:
 	$(COMPOSE) logs -f --tail 10 train
