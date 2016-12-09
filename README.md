@@ -1,11 +1,11 @@
 # About
-Training a RNN using [Rails](https://github.com/rails/rails) code to generate some "fun" Ruby codes.
+Training an RNN using [Rails](https://github.com/rails/rails) source code to generate some "fun" Ruby code.
 
 
 # Attempt #1
 ## Preprocessing
 * Tokenize all .rb files into words, including space and newline symbol.
-* Add <bof> at beginning and <eof> at end of a file.
+* Add `<bof>` at beginning and `<eof>` at end of a file.
 
 ## Model Structure
 * 2-layer LSTMs, each has 128 hidden units, 100 unrolled steps
